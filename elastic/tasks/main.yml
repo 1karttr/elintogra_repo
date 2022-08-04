@@ -1,0 +1,38 @@
+---
+- hosts: all
+  user: ansible
+  become: yes
+# root priviledge access
+  become_method: sudo
+  tasks:
+   - name: install Elastic rpm key
+     rpm_key:
+      key: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
+     become: true
+
+   - name: install Elastic rpm repository
+     yum_repository:
+       name: Elastic
+       description: Elastic packages
+       baseurl: https://artifacts.elastic.co/packages/7.x/yum
+       gpgcheck: true
+       gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+     become: true
+
+   - name: install Elastic
+     yum:
+       name: Elastic
+       state: present
+     become: true
+
+   - name: Elastic is installed
+     yum:
+      name=elastic
+      state=installed
+
+   - name: Elastic make service running and enable
+     service:
+      name=Elastic-Server
+      state=started
+      enabled=yes
